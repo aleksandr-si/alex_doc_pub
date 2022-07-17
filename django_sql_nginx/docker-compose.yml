@@ -1,0 +1,42 @@
+version: '3'
+services:
+      mysql_comp:
+              image: mysql
+              environment:
+                    - MYSQL_ROOT_PASSWORD=admin
+                    - MYSQL_DATABASE=test_db
+              networks:
+                      - app-net
+              volumes:
+                      -  dbdatadjd:/var/lib/mysql
+      nginx_comp:
+        build: ./nginx
+        ports:
+                - "8200:80"
+        depends_on:
+                - django_web_comp
+                - mysql_comp
+        networks:
+                - app-net
+                - net
+
+      django_web_comp:
+        depends_on:
+               - mysql_comp
+
+        build: ./django2
+        networks:
+                - app-net
+        env_file:
+                - ./env
+networks:
+        app-net:
+        net:
+                external:
+                              name: my-pre-existing-network
+
+                
+volumes:
+        dbdatadjd:
+
+
